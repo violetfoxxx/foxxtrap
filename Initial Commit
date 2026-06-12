@@ -3,67 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Foxx Trap</title>
+    <title>THE FOXX TRAP</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-        body { background: #000; color: #fff; font-family: 'Share Tech Mono', monospace; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .game-container { width: 350px; border: 2px solid #bc13fe; padding: 20px; text-align: center; }
-        .frame-box { height: 150px; border: 1px solid #ff007f; display: flex; justify-content: center; align-items: center; margin: 20px 0; font-size: 24px; }
-        .action-btn { width: 100%; padding: 15px; margin-bottom: 10px; background: transparent; color: #bc13fe; border: 2px solid #bc13fe; cursor: pointer; font-family: inherit; }
-        .action-btn:disabled { border-color: #555; color: #555; cursor: not-allowed; }
-        .highlight { color: #ff007f; }
+        body { background-color: #000; color: #fff; font-family: 'Share Tech Mono', monospace; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { width: 320px; border: 2px solid #bc13fe; padding: 20px; text-align: center; box-shadow: 0 0 20px #bc13fe; }
+        .header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 20px; border-bottom: 1px solid #bc13fe; padding-bottom: 10px; }
+        .frame { height: 160px; border: 2px solid #ff007f; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 20px; }
+        .btn { width: 100%; padding: 12px; margin: 5px 0; background: transparent; border: 1px solid #ff007f; color: #ff007f; cursor: pointer; text-transform: uppercase; font-family: inherit; }
+        .btn:disabled { border-color: #555; color: #555; cursor: not-allowed; }
+        .highlight { color: #ff007f; font-size: 24px; }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <h3>THE FOXX TRAP</h3>
-        <div id="roulette" class="frame-box">PREPARING...</div>
-        
-        <button id="triggerBtn" class="action-btn" onclick="lockFate()">TRAP MY WALLET</button>
-        
+    <div class="container">
+        <div class="header">
+            <span>THE FOXX TRAP</span>
+            <span>SYS_GATE V5</span>
+        </div>
+        <div id="roulette" class="frame">SYSTEM READY...</div>
+        <button id="triggerBtn" class="btn" onclick="lockFate()">TRAP MY WALLET</button>
         <div id="actionContainer" style="display:none;">
-            <button id="payBtn" class="action-btn" onclick="executePayment()">PAY TRIBUTE</button>
-            <button id="shareBtn" class="action-btn" onclick="sharePunishment()">SHARE YOUR FATE</button>
+            <button class="btn" onclick="sharePunishment()">1. CONFESS RESULT ON X</button>
+            <button id="payBtn" class="btn" disabled onclick="executePayment()">🔒 TRIBUTE LOCKED</button>
+            <button class="btn" onclick="resetEngine()">🔄 RECALIBRATE / REPLAY</button>
         </div>
     </div>
 
     <script>
         const outcomes = [
-            { text: "TRIBUTE:<br><span class='highlight'>$30</span>", amt: "$30", link: "https://throne.com/violetfoxxx888/item/1FC16DB3-6ECB-43BB-AF87-ABFBF641A6A9" },
-            { text: "TRIBUTE:<br><span class='highlight'>$45</span>", amt: "$45", link: "https://throne.com/violetfoxxx888/item/E9BA3E91-CE86-471B-853F-FF7F2F2888C7" },
-            { text: "TRIBUTE:<br><span class='highlight'>$50</span>", amt: "$50", link: "https://throne.com/violetfoxxx888/item/8E9809AC-DF45-4E1A-A3AF-E4C3F2E660CE" },
-            { text: "TRIBUTE:<br><span class='highlight'>$75</span>", amt: "$75", link: "https://throne.com/violetfoxxx888/item/11C05F35-8252-4756-969D-3E25951ED4D9" },
-            { text: "TRIBUTE:<br><span class='highlight'>$100</span>", amt: "$100", link: "https://throne.com/violetfoxxx888/item/EF6369CD-2652-419F-8879-1FC4DFA4AB2E" },
-            { text: "DRAIN:<br><span class='highlight'>$200</span>", amt: "$200", link: "https://throne.com/violetfoxxx888/item/5C68C4ED-19E5-40DD-8F57-B174D09042A9" }
+            { text: "TRIBUTE ALLOCATED:<br><span class='highlight'>$30</span>", amt: "$30", link: "https://throne.com/violetfoxxx888/item/1FC16DB3-6ECB-43BB-AF87-ABFBF641A6A9" },
+            { text: "TRIBUTE ALLOCATED:<br><span class='highlight'>$45</span>", amt: "$45", link: "https://throne.com/violetfoxxx888/item/E9BA3E91-CE86-471B-853F-FF7F2F2888C7" },
+            { text: "TRIBUTE ALLOCATED:<br><span class='highlight'>$50</span>", amt: "$50", link: "https://throne.com/violetfoxxx888/item/8E9809AC-DF45-4E1A-A3AF-E4C3F2E660CE" },
+            { text: "TRIBUTE ALLOCATED:<br><span class='highlight'>$75</span>", amt: "$75", link: "https://throne.com/violetfoxxx888/item/11C05F35-8252-4756-969D-3E25951ED4D9" },
+            { text: "TRIBUTE ALLOCATED:<br><span class='highlight'>$100</span>", amt: "$100", link: "https://throne.com/violetfoxxx888/item/EF6369CD-2652-419F-8879-1FC4DFA4AB2E" },
+            { text: "TRIBUTE ALLOCATED:<br><span class='highlight'>$200</span>", amt: "$200", link: "https://throne.com/violetfoxxx888/item/5C68C4ED-19E5-40DD-8F57-B174D09042A9" }
         ];
 
         let interval;
-        let finalOutcome;
+        let final;
 
-        function startFlashing() {
-            interval = setInterval(() => {
-                const rand = outcomes[Math.floor(Math.random() * outcomes.length)];
-                document.getElementById('roulette').innerHTML = rand.text;
-            }, 50);
-        }
-
-        function lockFate() {
-            clearInterval(interval);
-            finalOutcome = outcomes[Math.floor(Math.random() * outcomes.length)];
-            document.getElementById('roulette').innerHTML = finalOutcome.text;
-            document.getElementById('triggerBtn').style.display = 'none';
-            document.getElementById('actionContainer').style.display = 'block';
-        }
-
-        function executePayment() {
-            window.open(finalOutcome.link, '_blank');
-        }
-
-        function sharePunishment() {
-            window.open(`https://twitter.com/intent/tweet?text=Caught in The Foxx Trap! Must pay ${finalOutcome.amt}.`, '_blank');
-        }
-
-        window.onload = startFlashing;
+        function start() { interval = setInterval(() => { document.getElementById('roulette').innerHTML = outcomes[Math.floor(Math.random()*outcomes.length)].text; }, 50); }
+        function lockFate() { clearInterval(interval); final = outcomes[Math.floor(Math.random()*outcomes.length)]; document.getElementById('roulette').innerHTML = final.text; document.getElementById('triggerBtn').style.display='none'; document.getElementById('actionContainer').style.display='block'; }
+        function sharePunishment() { window.open(`https://twitter.com/intent/tweet?text=Caught in The Foxx Trap! Locked at ${final.amt}.`, '_blank'); document.getElementById('payBtn').disabled=false; document.getElementById('payBtn').innerText = "🔓 SUBMIT TRIBUTE"; }
+        function executePayment() { window.open(final.link, '_blank'); }
+        function resetEngine() { location.reload(); }
+        window.onload = start;
     </script>
 </body>
 </html>
