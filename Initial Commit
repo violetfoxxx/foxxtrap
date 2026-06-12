@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Foxx Trap - Forced Exposure Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .game-container {
+            width: 600px;
+            height: 600px;
+            background: linear-gradient(135deg, #090012 0%, #000000 100%);
+            border: 4px solid #bc13fe;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 45px;
+            border-radius: 4px;
+            box-shadow: 0 0 35px rgba(188, 19, 254, 0.3);
+        }
+
+        .cyber-grid {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(188, 19, 254, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(188, 19, 254, 0.04) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none; z-index: 1;
+        }
+
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(188, 19, 254, 0.4); padding-bottom: 15px; z-index: 5; }
+        .title { font-family: 'Orbitron', sans-serif; font-weight: 900; color: #ffffff; font-size: 24px; letter-spacing: 4px; text-shadow: 0 0 15px #bc13fe; }
+        .watermark { font-family: 'Orbitron', sans-serif; color: #00ffff; font-size: 14px; letter-spacing: 2px; text-shadow: 0 0 8px #00ffff; border: 1px solid rgba(0, 255, 255, 0.3); padding: 4px 10px; }
+        
+        .display-zone { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 5; padding: 20px 0; }
+        .frame-box { width: 100%; height: 220px; background: rgba(0, 0, 0, 0.85); border: 2px solid #ff007f; box-shadow: 0 0 25px rgba(255, 0, 127, 0.2); display: flex; justify-content: center; align-items: center; padding: 20px; position: relative; margin-bottom: 25px; }
+        .roulette-text { color: #ffffff; font-size: 32px; text-transform: uppercase; text-align: center; letter-spacing: 1px; }
+
+        .action-container { display: none; flex-direction: column; gap: 12px; width: 100%; }
+        .action-btn { width: 100%; background: #000; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 15px; letter-spacing: 2px; padding: 14px; text-transform: uppercase; border: 2px solid #bc13fe; color: #bc13fe; cursor: pointer; transition: all 0.2s; }
+        
+        .btn-tweet { border-color: #ff007f; color: #ff007f; animation: pulseGlow 1.5s infinite alternate; }
+        .btn-pay { border-color: #00ffff; color: #00ffff; }
+        .btn-pay:disabled { border-color: #333; color: #666; cursor: not-allowed; background: rgba(0,0,0,0.5); }
+        .btn-reset { border-color: #ffffff; color: #ffffff; font-size: 12px; padding: 8px; }
+
+        @keyframes pulseGlow { 0% { box-shadow: 0 0 10px rgba(255, 0, 127, 0.4); } 100% { box-shadow: 0 0 25px rgba(255, 0, 127, 0.8); } }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <div class="cyber-grid"></div>
+        <div class="header">
+            <span class="title">🔮 THE FOXX TRAP</span>
+            <span class="watermark">SYS_GATE v5</span>
+        </div>
+
+        <div class="display-zone">
+            <div class="frame-box">
+                <div id="roulette" class="roulette-text">PREPARING TRAP...</div>
+            </div>
+
+            <button id="triggerBtn" class="action-btn" onclick="lockFate()">TRAP MY WALLET</button>
+
+            <div id="actionContainer" class="action-container">
+                <button id="tweetBtn" class="action-btn btn-tweet" onclick="sharePunishment()">1. CONFESS RESULT ON X</button>
+                <button id="payBtn" class="action-btn btn-pay" onclick="executePayment()" disabled>🔒 TRIBUTE LOCKED</button>
+                <button class="action-btn btn-reset" onclick="resetEngine()">🔄 RECALIBRATE / REPLAY</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const outcomes = [
+            { amt: "$30", link: "https://throne.com/violetfoxxx888/item/1FC16DB3-6ECB-43BB-AF87-ABFBF641A6A9" },
+            { amt: "$45", link: "https://throne.com/violetfoxxx888/item/E9BA3E91-CE86-471B-853F-FF7F2F2888C7" },
+            { amt: "$50", link: "https://throne.com/violetfoxxx888/item/8E9809AC-DF45-4E1A-A3AF-E4C3F2E660CE" },
+            { amt: "$75", link: "https://throne.com/violetfoxxx888/item/11C05F35-8252-4756-969D-3E25951ED4D9" },
+            { amt: "$100", link: "https://throne.com/violetfoxxx888/item/EF6369CD-2652-419F-8879-1FC4DFA4AB2E" },
+            { amt: "$200", link: "https://throne.com/violetfoxxx888/item/5C68C4ED-19E5-40DD-8F57-B174D09042A9" }
+        ];
+
+        let spinInterval, finalOutcome;
+
+        function startCycle() {
+            spinInterval = setInterval(() => {
+                const random = outcomes[Math.floor(Math.random() * outcomes.length)];
+                document.getElementById('roulette').innerHTML = `TRIBUTE ALLOCATED:<br><span style="color:#ff007f">${random.amt}</span>`;
+            }, 50);
+        }
+
+        function lockFate() {
+            clearInterval(spinInterval);
+            finalOutcome = outcomes[Math.floor(Math.random() * outcomes.length)];
+            document.getElementById('roulette').innerHTML = `TRIBUTE ALLOCATED:<br><span style="color:#ff007f">${finalOutcome.amt}</span>`;
+            document.getElementById('triggerBtn').style.display = 'none';
+            document.getElementById('actionContainer').style.display = 'flex';
+        }
+
+        function sharePunishment() {
+            const tweet = encodeURIComponent(`My wallet just got caught in The Foxx Trap. The terminal locked my fate at ${finalOutcome.amt}. Paying my tribute now.`);
+            window.open(`https://twitter.com/intent/tweet?text=${tweet}`, '_blank');
+            const payBtn = document.getElementById('payBtn');
+            payBtn.disabled = false;
+            payBtn.innerHTML = `🔓 TRIBUTE ${finalOutcome.amt} NOW`;
+        }
+
+        function executePayment() { window.open(finalOutcome.link, '_blank'); }
+
+        function resetEngine() {
+            document.getElementById('actionContainer').style.display = 'none';
+            document.getElementById('triggerBtn').style.display = 'block';
+            document.getElementById('payBtn').disabled = true;
+            document.getElementById('payBtn').innerHTML = "🔒 TRIBUTE LOCKED";
+            startCycle();
+        }
+
+        window.onload = startCycle;
+    </script>
+</body>
+</html>
