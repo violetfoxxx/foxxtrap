@@ -5,9 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Foxx Trap</title>
     <style>
-        body { background-color: #000; color: #fff; text-align: center; font-family: sans-serif; padding-top: 50px; }
-        #displayArea { font-size: 24px; margin: 20px; color: #ff0000; font-weight: bold; }
-        button { padding: 15px 30px; font-size: 20px; background-color: #ff0000; color: white; border: none; cursor: pointer; margin: 10px; display: block; margin-left: auto; margin-right: auto; }
+        body { 
+            background-color: #000; 
+            color: #fff; 
+            text-align: center; 
+            font-family: 'Courier New', Courier, monospace; 
+            padding-top: 50px; 
+        }
+        h1 { color: #ff0000; text-transform: uppercase; letter-spacing: 2px; }
+        #displayArea { font-size: 28px; margin: 30px; color: #ff0000; font-weight: bold; border: 1px solid #333; padding: 20px; }
+        button { 
+            padding: 15px 30px; 
+            font-size: 20px; 
+            background-color: #ff0000; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            margin: 10px; 
+            display: block; 
+            margin-left: auto; 
+            margin-right: auto; 
+            transition: 0.3s;
+        }
+        button:hover { background-color: #cc0000; }
         #shareButton { background-color: #1DA1F2; display: none; }
     </style>
 </head>
@@ -39,15 +59,16 @@
                 // Step 1: Trigger Trap
                 const selection = links[Math.floor(Math.random() * links.length)];
                 document.getElementById('displayArea').innerText = "TRIBUTE AMOUNT: " + selection.amount;
-                document.getElementById('statusText').innerText = "Fate has been locked.";
+                document.getElementById('statusText').innerText = "Fate has been locked. Submit your tribute.";
                 document.getElementById('mainButton').innerText = "PAY TRIBUTE";
                 selectedLink = selection.url;
                 currentStep = 2;
             } else if (currentStep === 2) {
                 // Step 2: Redirect to Payment
-                window.location.href = selectedLink;
-                // Show share button after a slight delay
-                setTimeout(() => { document.getElementById('shareButton').style.display = 'block'; }, 1000);
+                window.open(selectedLink, '_blank');
+                document.getElementById('statusText').innerText = "Tribute initiated. Now, let the world know.";
+                document.getElementById('shareButton').style.display = 'block';
+                currentStep = 3;
             }
         }
 
