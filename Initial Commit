@@ -1,107 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Findom Tribute Wheel 💸</title>
-<style>
-  body {font-family: 'Segoe UI', sans-serif;text-align: center;background: linear-gradient(135deg, #1a0033, #330033);color: #ffd700;margin: 0;padding: 20px;min-height: 100vh;}
-  h1 {margin: 10px 0 8px;font-size: 2.8em;text-shadow: 0 0 15px #ff00ff;}
-  canvas {margin: 20px auto;display: block;border-radius: 50%;box-shadow: 0 0 40px rgba(255, 0, 255, 0.5);}
-  button {font-size: 22px;padding: 16px 50px;border-radius: 50px;border: none;background: linear-gradient(#ffd700, #ffaa00);color: #1a0033;font-weight: bold;cursor: pointer;margin: 12px;box-shadow: 0 8px 20px rgba(255, 0, 150, 0.4);}
-  #payBtn { background: linear-gradient(#00ff9d, #00cc7a); display: none; }
-  #shareBtn { background: linear-gradient(#00acee, #0088cc); color: white; display: none; }
-  #result {margin-top: 25px;font-size: 32px;min-height: 120px;font-weight: bold;text-shadow: 0 0 10px #ff00ff;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Foxx Trap</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        body { background: #000; color: #fff; font-family: 'Share Tech Mono', monospace; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .game-container { width: 350px; border: 2px solid #bc13fe; padding: 20px; text-align: center; }
+        .frame-box { height: 150px; border: 1px solid #ff007f; display: flex; justify-content: center; align-items: center; margin: 20px 0; font-size: 24px; }
+        .action-btn { width: 100%; padding: 15px; margin-bottom: 10px; background: transparent; color: #bc13fe; border: 2px solid #bc13fe; cursor: pointer; font-family: inherit; }
+        .action-btn:disabled { border-color: #555; color: #555; cursor: not-allowed; }
+        .highlight { color: #ff007f; }
+    </style>
 </head>
 <body>
+    <div class="game-container">
+        <h3>THE FOXX TRAP</h3>
+        <div id="roulette" class="frame-box">PREPARING...</div>
+        
+        <button id="triggerBtn" class="action-btn" onclick="lockFate()">TRAP MY WALLET</button>
+        
+        <div id="actionContainer" style="display:none;">
+            <button id="payBtn" class="action-btn" onclick="executePayment()">PAY TRIBUTE</button>
+            <button id="shareBtn" class="action-btn" onclick="sharePunishment()">SHARE YOUR FATE</button>
+        </div>
+    </div>
 
-<h1>💸 FINDOM TRIBUTE WHEEL 💸</h1>
-<p>Spin it, pig. Your Dom decides how much you send today.</p>
+    <script>
+        const outcomes = [
+            { text: "TRIBUTE:<br><span class='highlight'>$30</span>", amt: "$30", link: "https://throne.com/violetfoxxx888/item/1FC16DB3-6ECB-43BB-AF87-ABFBF641A6A9" },
+            { text: "TRIBUTE:<br><span class='highlight'>$45</span>", amt: "$45", link: "https://throne.com/violetfoxxx888/item/E9BA3E91-CE86-471B-853F-FF7F2F2888C7" },
+            { text: "TRIBUTE:<br><span class='highlight'>$50</span>", amt: "$50", link: "https://throne.com/violetfoxxx888/item/8E9809AC-DF45-4E1A-A3AF-E4C3F2E660CE" },
+            { text: "TRIBUTE:<br><span class='highlight'>$75</span>", amt: "$75", link: "https://throne.com/violetfoxxx888/item/11C05F35-8252-4756-969D-3E25951ED4D9" },
+            { text: "TRIBUTE:<br><span class='highlight'>$100</span>", amt: "$100", link: "https://throne.com/violetfoxxx888/item/EF6369CD-2652-419F-8879-1FC4DFA4AB2E" },
+            { text: "DRAIN:<br><span class='highlight'>$200</span>", amt: "$200", link: "https://throne.com/violetfoxxx888/item/5C68C4ED-19E5-40DD-8F57-B174D09042A9" }
+        ];
 
-<canvas id="wheel" width="440" height="440"></canvas>
-<button id="spinBtn" onclick="spin()">TRAP MY WALLET</button>
-<button id="payBtn" onclick="payTribute()">PAY TRIBUTE</button>
-<button id="shareBtn" onclick="shareResult()">SHARE YOUR FATE</button>
+        let interval;
+        let finalOutcome;
 
-<div id="result"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-<script>
-const canvas = document.getElementById('wheel');
-const ctx = canvas.getContext('2d');
-const cx = 220, cy = 220, r = 200;
-let isSpinning = false;
-let selectedTribute = null;
-
-// Your configured links
-const tributeOptions = [
-    { amount: "$30", url: "https://throne.com/violetfoxxx888/item/1FC16DB3-6ECB-43BB-AF87-ABFBF641A6A9" },
-    { amount: "$45", url: "https://throne.com/violetfoxxx888/item/E9BA3E91-CE86-471B-853F-FF7F2F2888C7" },
-    { amount: "$50", url: "https://throne.com/violetfoxxx888/item/8E9809AC-DF45-4E1A-A3AF-E4C3F2E660CE" },
-    { amount: "$75", url: "https://throne.com/violetfoxxx888/item/11C05F35-8252-4756-969D-3E25951ED4D9" },
-    { amount: "$100", url: "https://throne.com/violetfoxxx888/item/EF6369CD-2652-419F-8879-1FC4DFA4AB2E" },
-    { amount: "$200", url: "https://throne.com/violetfoxxx888/item/5C68C4ED-19E5-40DD-8F57-B174D09042A9" }
-];
-
-function drawWheel() {
-    const n = tributeOptions.length;
-    const arc = (2 * Math.PI) / n;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < n; i++) {
-        const angle = i * arc;
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.arc(cx, cy, r, angle, angle + arc);
-        ctx.fillStyle = i % 2 === 0 ? '#4b0082' : '#ffd700';
-        ctx.fill();
-        ctx.stroke();
-        ctx.save();
-        ctx.translate(cx, cy);
-        ctx.rotate(angle + arc / 2 + Math.PI / 2);
-        ctx.fillStyle = i % 2 === 0 ? '#ffd700' : '#1a0033';
-        ctx.font = "bold 20px sans-serif";
-        ctx.fillText(tributeOptions[i].amount, 0, -r * 0.7);
-        ctx.restore();
-    }
-}
-
-function spin() {
-    if (isSpinning) return;
-    isSpinning = true;
-    document.getElementById('payBtn').style.display = 'none';
-    document.getElementById('shareBtn').style.display = 'none';
-    
-    const n = tributeOptions.length;
-    const targetIndex = Math.floor(Math.random() * n);
-    selectedTribute = tributeOptions[targetIndex];
-    
-    // Simple visual spin
-    let rotations = 0;
-    const interval = setInterval(() => {
-        ctx.rotate(0.5);
-        drawWheel();
-        rotations++;
-        if (rotations > 50) {
-            clearInterval(interval);
-            isSpinning = false;
-            document.getElementById('result').innerHTML = `TRIBUTE LOCKED: ${selectedTribute.amount}`;
-            document.getElementById('payBtn').style.display = 'inline-block';
-            confetti();
+        function startFlashing() {
+            interval = setInterval(() => {
+                const rand = outcomes[Math.floor(Math.random() * outcomes.length)];
+                document.getElementById('roulette').innerHTML = rand.text;
+            }, 50);
         }
-    }, 50);
-}
 
-function payTribute() {
-    window.open(selectedTribute.url, '_blank');
-    document.getElementById('shareBtn').style.display = 'inline-block';
-}
+        function lockFate() {
+            clearInterval(interval);
+            finalOutcome = outcomes[Math.floor(Math.random() * outcomes.length)];
+            document.getElementById('roulette').innerHTML = finalOutcome.text;
+            document.getElementById('triggerBtn').style.display = 'none';
+            document.getElementById('actionContainer').style.display = 'block';
+        }
 
-function shareResult() {
-    const text = "I just got trapped by @VioletFoxxx for " + selectedTribute.amount + "! See your fate: " + window.location.href;
-    window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(text), "_blank");
-}
+        function executePayment() {
+            window.open(finalOutcome.link, '_blank');
+        }
 
-drawWheel();
-</script>
+        function sharePunishment() {
+            window.open(`https://twitter.com/intent/tweet?text=Caught in The Foxx Trap! Must pay ${finalOutcome.amt}.`, '_blank');
+        }
+
+        window.onload = startFlashing;
+    </script>
 </body>
 </html>
