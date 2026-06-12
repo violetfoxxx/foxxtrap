@@ -3,57 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE FOXX TRAP</title>
+    <title>THE FOXX TRAP GAME</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
         
+        :root {
+            --neon-pink: #ff007f;
+            --neon-purple: #bc13fe;
+            --neon-blue: #00ffff;
+            --white-glow: #fff0f5;
+        }
+
         body { 
-            background-color: #050505; 
-            color: #bc13fe; 
+            background-color: #030104; 
+            color: #fff; 
             font-family: 'Share Tech Mono', monospace; 
-            display: flex; justify-content: center; align-items: center; 
-            min-height: 100vh; margin: 0;
-            background-image: radial-gradient(circle at 2px 2px, #1a1a1a 1px, transparent 0);
-            background-size: 40px 40px;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0;
+            overflow: hidden;
+            position: relative;
         }
+
+        /* Perspective Grid Background */
+        body::before {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background-image: 
+                linear-gradient(to right, rgba(188, 19, 254, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(188, 19, 254, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            transform: perspective(500px) rotateX(60deg);
+            z-index: 1;
+            animation: gridScroll 20s linear infinite;
+        }
+
+        @keyframes gridScroll {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(30px); }
+        }
+
+        /* CRT Scanline Effect Overlay */
+        body::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
         .container { 
-            width: 320px; border: 2px solid #bc13fe; padding: 25px; 
-            text-align: center; background: rgba(0,0,0,0.85);
-            box-shadow: 0 0 30px rgba(188, 19, 254, 0.3);
+            width: 330px; 
+            border: 2px solid var(--neon-purple); 
+            padding: 30px; 
+            text-align: center; 
+            background: rgba(6, 3, 8, 0.9);
+            backdrop-filter: blur(8px);
+            z-index: 10;
+            position: relative;
+            box-shadow: 
+                0 0 20px rgba(188, 19, 254, 0.4),
+                inset 0 0 20px rgba(188, 19, 254, 0.3),
+                0 0 40px rgba(255, 0, 127, 0.1);
         }
+
         .header { 
-            display: flex; justify-content: space-between; font-size: 11px; 
-            margin-bottom: 25px; border-bottom: 1px solid #bc13fe; padding-bottom: 10px;
-            color: #00ffff; text-shadow: 0 0 5px #00ffff;
+            display: flex; 
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 30px; 
+            border-bottom: 1px solid rgba(188, 19, 254, 0.5); 
+            padding-bottom: 12px; 
         }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: #fff;
+            text-shadow: 0 0 8px var(--neon-purple);
+            font-weight: bold;
+        }
+
+        .game-badge {
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue);
+            text-transform: uppercase;
+            text-align: left;
+            margin-top: 2px;
+        }
+
         .frame { 
-            height: 160px; border: 2px solid #ff007f; 
-            display: flex; flex-direction: column; justify-content: center; 
-            align-items: center; margin-bottom: 25px;
-            box-shadow: inset 0 0 15px rgba(255, 0, 127, 0.2);
+            height: 180px; 
+            border: 2px solid var(--neon-pink); 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            margin-bottom: 30px;
+            background: rgba(255, 0, 127, 0.03);
+            box-shadow: 
+                0 0 15px rgba(255, 0, 127, 0.4), 
+                inset 0 0 20px rgba(255, 0, 127, 0.3);
+            position: relative;
         }
+
         .btn { 
-            width: 100%; padding: 12px; margin: 6px 0; background: transparent; 
-            border: 1px solid #ff007f; color: #ff007f; cursor: pointer; 
-            text-transform: uppercase; font-family: inherit; font-size: 13px;
-            transition: all 0.3s ease;
+            width: 100%; 
+            padding: 14px; 
+            margin: 10px 0; 
+            background: rgba(255, 0, 127, 0.02); 
+            border: 1px solid var(--neon-pink); 
+            color: #fff; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            font-family: inherit; 
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 4px var(--neon-pink);
+            box-shadow: 0 0 8px rgba(255, 0, 127, 0.3), inset 0 0 4px rgba(255, 0, 127, 0.2);
+            transition: all 0.15s ease-in-out;
         }
-        .btn:hover { background: #ff007f; color: #000; box-shadow: 0 0 15px #ff007f; }
+
+        .btn:hover { 
+            background: var(--neon-pink); 
+            color: #000; 
+            font-weight: bold;
+            box-shadow: 0 0 25px var(--neon-pink), 0 0 10px #fff;
+            text-shadow: none;
+        }
         
-        /* Cyberpunk Flashing Effect */
-        .flash { animation: pulse 0.8s infinite alternate; }
-        @keyframes pulse {
-            from { opacity: 1; text-shadow: 0 0 5px #ff007f; }
-            to { opacity: 0.5; text-shadow: 0 0 20px #ff007f; }
+        /* Intense High-Frequency Strobe for Roulette State */
+        .flash { 
+            animation: hyperStrobe 0.15s infinite alternate; 
         }
-        .highlight { color: #ff007f; font-size: 28px; font-weight: bold; }
+
+        @keyframes hyperStrobe {
+            0% { opacity: 0.85; filter: brightness(1); }
+            100% { opacity: 1; filter: brightness(1.3); }
+        }
+
+        /* Saturated Static Glow for Locked State */
+        .locked-glow {
+            animation: intenseGlow 1.5s infinite alternate ease-in-out;
+        }
+
+        @keyframes intenseGlow {
+            from { text-shadow: 0 0 10px var(--white-glow), 0 0 20px var(--neon-pink), 0 0 40px var(--neon-pink); }
+            to { text-shadow: 0 0 15px var(--white-glow), 0 0 30px var(--neon-pink), 0 0 60px var(--neon-pink), 0 0 90px var(--neon-pink); }
+        }
+        
+        .highlight { 
+            color: #fff;
+            font-size: 38px; 
+            font-weight: bold; 
+            margin-top: 5px;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <span>THE FOXX TRAP</span>
-            <span>SYS_GATE V5</span>
+            <div class="header-top">
+                <span>THE FOXX TRAP</span>
+                <span>SYS_GATE V5</span>
+            </div>
+            <div class="game-badge">// INTERACTIVE TRAP GAME</div>
         </div>
         <div id="roulette" class="frame flash">SYSTEM READY...</div>
         
@@ -68,37 +196,6 @@
 
     <script>
         const outcomes = [
-            { text: "TRIBUTE ALLOCATED:<br><span class='highlight'>$30</span>", amt: "$30", link: "https://throne.com/violetfoxxx888/item/1FC16DB3-6ECB-43BB-AF87-ABFBF641A6A9" },
-            { text: "TRIBUTE ALLOCATED:<br><span class='highlight'>$45</span>", amt: "$45", link: "https://throne.com/violetfoxxx888/item/E9BA3E91-CE86-471B-853F-FF7F2F2888C7" },
-            { text: "TRIBUTE ALLOCATED:<br><span class='highlight'>$50</span>", amt: "$50", link: "https://throne.com/violetfoxxx888/item/8E9809AC-DF45-4E1A-A3AF-E4C3F2E660CE" },
-            { text: "TRIBUTE ALLOCATED:<br><span class='highlight'>$75</span>", amt: "$75", link: "https://throne.com/violetfoxxx888/item/11C05F35-8252-4756-969D-3E25951ED4D9" },
-            { text: "TRIBUTE ALLOCATED:<br><span class='highlight'>$100</span>", amt: "$100", link: "https://throne.com/violetfoxxx888/item/EF6369CD-2652-419F-8879-1FC4DFA4AB2E" },
-            { text: "TRIBUTE ALLOCATED:<br><span class='highlight'>$200</span>", amt: "$200", link: "https://throne.com/violetfoxxx888/item/5C68C4ED-19E5-40DD-8F57-B174D09042A9" }
-        ];
-
-        let interval;
-        let final;
-
-        function start() { 
-            interval = setInterval(() => { 
-                document.getElementById('roulette').innerHTML = outcomes[Math.floor(Math.random()*outcomes.length)].text; 
-            }, 50); 
-        }
-        
-        function lockFate() { 
-            clearInterval(interval); 
-            final = outcomes[Math.floor(Math.random()*outcomes.length)]; 
-            document.getElementById('roulette').innerHTML = final.text; 
-            document.getElementById('roulette').classList.remove('flash'); // Stop flash once locked
-            document.getElementById('triggerBtn').style.display='none'; 
-            document.getElementById('actionContainer').style.display='block';
-        }
-        
-        function executePayment() { window.open(final.link, '_blank'); }
-        function sharePunishment() { window.open(`https://twitter.com/intent/tweet?text=Caught in The Foxx Trap! Locked at ${final.amt}.`, '_blank'); }
-        function resetEngine() { location.reload(); }
-        
-        window.onload = start;
-    </script>
-</body>
-</html>
+            { text: "TRIBUTE ALLOCATED:<br><span class='highlight locked-glow'>$30</span>", amt: "$30", link: "https://throne.com/violetfoxxx888/item/1FC16DB3-6ECB-43BB-AF87-ABFBF641A6A9" },
+            { text: "TRIBUTE ALLOCATED:<br><span class='highlight locked-glow'>$45</span>", amt: "$45", link: "https://throne.com/violetfoxxx888/item/E9BA3E91-CE86-471B-853F-FF7F2F2888C7" },
+            { text: "TRIBUTE ALLOCATED:<br><span class='highlight locked-glow'>$50</span>", amt: "$50", link: "
