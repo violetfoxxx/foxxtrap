@@ -27,7 +27,7 @@
             position: relative;
         }
 
-        /* Perspective Grid Background */
+        /* Perspective Grid Background Layer */
         body::before {
             content: "";
             position: absolute;
@@ -49,7 +49,7 @@
             100% { transform: perspective(500px) rotateX(60deg) translateY(30px); }
         }
 
-        /* CRT Scanline Effect Overlay */
+        /* CRT Scanline Display Filter Layer */
         body::after {
             content: " ";
             display: block;
@@ -66,7 +66,7 @@
             border: 2px solid var(--neon-purple); 
             padding: 30px; 
             text-align: center; 
-            background: rgba(6, 3, 8, 0.9);
+            background: rgba(6, 3, 8, 0.95);
             backdrop-filter: blur(8px);
             z-index: 10;
             position: relative;
@@ -113,7 +113,7 @@
             justify-content: center; 
             align-items: center; 
             margin-bottom: 30px;
-            background: rgba(255, 0, 127, 0.03);
+            background: rgba(255, 0, 127, 0.05);
             box-shadow: 
                 0 0 15px rgba(255, 0, 127, 0.4), 
                 inset 0 0 20px rgba(255, 0, 127, 0.3);
@@ -132,8 +132,8 @@
             font-family: inherit; 
             font-size: 13px;
             letter-spacing: 1px;
-            text-shadow: 0 0 4px var(--neon-pink);
-            box-shadow: 0 0 8px rgba(255, 0, 127, 0.3), inset 0 0 4px rgba(255, 0, 127, 0.2);
+            text-shadow: 0 0 5px var(--neon-pink);
+            box-shadow: 0 0 8px rgba(255, 0, 127, 0.5), inset 0 0 4px rgba(255, 0, 127, 0.2);
             transition: all 0.15s ease-in-out;
         }
 
@@ -145,24 +145,24 @@
             text-shadow: none;
         }
         
-        /* Intense High-Frequency Strobe for Roulette State */
+        /* High-Frequency Brightness Strobe for Roulette State */
         .flash { 
             animation: hyperStrobe 0.15s infinite alternate; 
         }
 
         @keyframes hyperStrobe {
-            0% { opacity: 0.85; filter: brightness(1); }
-            100% { opacity: 1; filter: brightness(1.3); }
+            0% { opacity: 0.8; filter: brightness(1); }
+            100% { opacity: 1; filter: brightness(1.35); }
         }
 
-        /* Saturated Static Glow for Locked State */
+        /* High-Intensity Saturated Glowing Accent for Locked Tribute Target */
         .locked-glow {
-            animation: intenseGlow 1.5s infinite alternate ease-in-out;
+            animation: intenseGlow 1.2s infinite alternate ease-in-out;
         }
 
         @keyframes intenseGlow {
-            from { text-shadow: 0 0 10px var(--white-glow), 0 0 20px var(--neon-pink), 0 0 40px var(--neon-pink); }
-            to { text-shadow: 0 0 15px var(--white-glow), 0 0 30px var(--neon-pink), 0 0 60px var(--neon-pink), 0 0 90px var(--neon-pink); }
+            from { text-shadow: 0 0 10px var(--white-glow), 0 0 25px var(--neon-pink), 0 0 40px var(--neon-pink); }
+            to { text-shadow: 0 0 15px var(--white-glow), 0 0 35px var(--neon-pink), 0 0 65px var(--neon-pink), 0 0 95px var(--neon-pink); }
         }
         
         .highlight { 
@@ -198,4 +198,38 @@
         const outcomes = [
             { text: "TRIBUTE ALLOCATED:<br><span class='highlight locked-glow'>$30</span>", amt: "$30", link: "https://throne.com/violetfoxxx888/item/1FC16DB3-6ECB-43BB-AF87-ABFBF641A6A9" },
             { text: "TRIBUTE ALLOCATED:<br><span class='highlight locked-glow'>$45</span>", amt: "$45", link: "https://throne.com/violetfoxxx888/item/E9BA3E91-CE86-471B-853F-FF7F2F2888C7" },
-            { text: "TRIBUTE ALLOCATED:<br><span class='highlight locked-glow'>$50</span>", amt: "$50", link: "
+            { text: "TRIBUTE ALLOCATED:<br><span class='highlight locked-glow'>$50</span>", amt: "$50", link: "https://throne.com/violetfoxxx888/item/8E9809AC-DF45-4E1A-A3AF-E4C3F2E660CE" },
+            { text: "TRIBUTE ALLOCATED:<br><span class='highlight locked-glow'>$75</span>", amt: "$75", link: "https://throne.com/violetfoxxx888/item/11C05F35-8252-4756-969D-3E25951ED4D9" },
+            { text: "TRIBUTE ALLOCATED:<br><span class='highlight locked-glow'>$100</span>", amt: "$100", link: "https://throne.com/violetfoxxx888/item/EF6369CD-2652-419F-8879-1FC4DFA4AB2E" },
+            { text: "TRIBUTE ALLOCATED:<br><span class='highlight locked-glow'>$200</span>", amt: "$200", link: "https://throne.com/violetfoxxx888/item/5C68C4ED-19E5-40DD-8F57-B174D09042A9" }
+        ];
+
+        let interval;
+        let final;
+
+        function start() { 
+            interval = setInterval(() => { 
+                const randomItem = outcomes[Math.floor(Math.random() * outcomes.length)];
+                // Keep performance clean while removing active target script glows inside rapid loop animation states
+                const safeLoopText = randomItem.text.replace(' locked-glow', '');
+                document.getElementById('roulette').innerHTML = safeLoopText; 
+            }, 50); 
+        }
+        
+        function lockFate() { 
+            clearInterval(interval); 
+            final = outcomes[Math.floor(Math.random() * outcomes.length)]; 
+            document.getElementById('roulette').innerHTML = final.text; 
+            document.getElementById('roulette').classList.remove('flash'); 
+            document.getElementById('triggerBtn').style.display = 'none'; 
+            document.getElementById('actionContainer').style.display = 'block';
+        }
+        
+        function executePayment() { window.open(final.link, '_blank'); }
+        function sharePunishment() { window.open(`https://twitter.com/intent/tweet?text=Caught in The Foxx Trap Game! Locked at ${final.amt}.`, '_blank'); }
+        function resetEngine() { location.reload(); }
+        
+        window.onload = start;
+    </script>
+</body>
+</html>
