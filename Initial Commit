@@ -5,46 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Foxx Trap</title>
     <style>
-        body {
-            background-color: #000;
-            color: #fff;
-            text-align: center;
-            font-family: sans-serif;
-            padding-top: 50px;
-        }
-        button {
-            padding: 15px 30px;
-            font-size: 20px;
-            background-color: #ff0000;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        button:hover {
-            background-color: #cc0000;
-        }
+        body { background-color: #000; color: #fff; text-align: center; font-family: sans-serif; padding-top: 50px; }
+        #displayArea { font-size: 24px; margin: 20px; color: #ff0000; font-weight: bold; }
+        button { padding: 15px 30px; font-size: 20px; background-color: #ff0000; color: white; border: none; cursor: pointer; margin: 10px; display: block; margin-left: auto; margin-right: auto; }
+        #shareButton { background-color: #1DA1F2; display: none; }
     </style>
 </head>
 <body>
 
     <h1>The Foxx Trap</h1>
-    <p>Face your fate. The terminal is waiting.</p>
+    <p id="statusText">Face your fate. The terminal is waiting.</p>
     
-    <button id="trapButton" onclick="triggerTrap()">TRAP MY WALLET</button>
+    <div id="displayArea">---</div>
+
+    <button id="mainButton" onclick="handleStep()">TRAP MY WALLET</button>
+    <button id="shareButton" onclick="shareResult()">SHARE YOUR FATE</button>
 
     <script>
-        function triggerTrap() {
-            const links = [
-                "https://throne.com/violetfoxxx888/item/1FC16DB3-6ECB-43BB-AF87-ABFBF641A6A9",
-                "https://throne.com/violetfoxxx888/item/E9BA3E91-CE86-471B-853F-FF7F2F2888C7",
-                "https://throne.com/violetfoxxx888/item/8E9809AC-DF45-4E1A-A3AF-E4C3F2E660CE",
-                "https://throne.com/violetfoxxx888/item/11C05F35-8252-4756-969D-3E25951ED4D9",
-                "https://throne.com/violetfoxxx888/item/EF6369CD-2652-419F-8879-1FC4DFA4AB2E",
-                "https://throne.com/violetfoxxx888/item/5C68C4ED-19E5-40DD-8F57-B174D09042A9"
-            ];
-            const randomLink = links[Math.floor(Math.random() * links.length)];
-            window.location.href = randomLink;
+        let currentStep = 1;
+        let selectedLink = "";
+
+        const links = [
+            { amount: "$30", url: "https://throne.com/violetfoxxx888/item/1FC16DB3-6ECB-43BB-AF87-ABFBF641A6A9" },
+            { amount: "$50", url: "https://throne.com/violetfoxxx888/item/E9BA3E91-CE86-471B-853F-FF7F2F2888C7" },
+            { amount: "$75", url: "https://throne.com/violetfoxxx888/item/8E9809AC-DF45-4E1A-A3AF-E4C3F2E660CE" },
+            { amount: "$100", url: "https://throne.com/violetfoxxx888/item/11C05F35-8252-4756-969D-3E25951ED4D9" },
+            { amount: "$150", url: "https://throne.com/violetfoxxx888/item/EF6369CD-2652-419F-8879-1FC4DFA4AB2E" },
+            { amount: "$200", url: "https://throne.com/violetfoxxx888/item/5C68C4ED-19E5-40DD-8F57-B174D09042A9" }
+        ];
+
+        function handleStep() {
+            if (currentStep === 1) {
+                // Step 1: Trigger Trap
+                const selection = links[Math.floor(Math.random() * links.length)];
+                document.getElementById('displayArea').innerText = "TRIBUTE AMOUNT: " + selection.amount;
+                document.getElementById('statusText').innerText = "Fate has been locked.";
+                document.getElementById('mainButton').innerText = "PAY TRIBUTE";
+                selectedLink = selection.url;
+                currentStep = 2;
+            } else if (currentStep === 2) {
+                // Step 2: Redirect to Payment
+                window.location.href = selectedLink;
+                // Show share button after a slight delay
+                setTimeout(() => { document.getElementById('shareButton').style.display = 'block'; }, 1000);
+            }
+        }
+
+        function shareResult() {
+            const text = "I just got trapped by @VioletFoxxx! My tribute is locked. See your fate here: " + window.location.href;
+            window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(text), "_blank");
         }
     </script>
 </body>
