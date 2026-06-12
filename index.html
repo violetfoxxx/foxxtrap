@@ -208,8 +208,9 @@
         let interval;
         let final;
         let audioCtx = null;
+        let musicInterval = null;
 
-        // Core 8-bit Synth sound synthesizer
+        // Code-generated 8-bit synthesizer engine
         function playSound(type) {
             try {
                 if (!audioCtx) {
@@ -221,19 +222,16 @@
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
 
-                // Authentic retro triangle/square waveforms
                 osc.type = (type === 'spin' || type === 'click') ? 'square' : 'triangle';
 
                 if (type === 'spin') {
-                    // Quick low pitch chirps for running slots
-                    osc.frequency.setValueAtTime(120 + Math.random() * 60, audioCtx.currentTime);
-                    gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(110 + Math.random() * 40, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.04);
                     osc.start();
                     osc.stop(audioCtx.currentTime + 0.04);
                 } 
                 else if (type === 'lock') {
-                    // Vintage rising multi-tone alert sound 
                     osc.frequency.setValueAtTime(220, audioCtx.currentTime);
                     osc.frequency.setValueAtTime(440, audioCtx.currentTime + 0.08);
                     osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.25);
@@ -243,17 +241,49 @@
                     osc.stop(audioCtx.currentTime + 0.3);
                 } 
                 else if (type === 'click') {
-                    // Fast classic high coin ping sound
-                    osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
-                    osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.05); // A5
+                    osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.05);
                     gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.15);
                     osc.start();
                     osc.stop(audioCtx.currentTime + 0.15);
                 }
             } catch (e) {
-                console.log("Audio contextual restriction handled safely.");
+                console.log("Audio constraints handled successfully.");
             }
+        }
+
+        // Procedural Retro Arcade Background Loop Engine
+        function startVintageMusicLoop() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            // Classic 4-step vintage arcade minor bassline note array
+            const notes = [110.00, 130.81, 146.83, 164.81]; // A2, C3, D3, E3
+            let currentStep = 0;
+
+            musicInterval = setInterval(() => {
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle'; // Smooth vintage sub-bass style tone
+                    osc.frequency.setValueAtTime(notes[currentStep], audioCtx.currentTime);
+                    
+                    gain.gain.setValueAtTime(0.05, audioCtx.currentTime); // Subtle background volume balance
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.25);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.25);
+                    
+                    currentStep = (currentStep + 1) % notes.length;
+                } catch (err) {
+                    clearInterval(musicInterval);
+                }
+            }, 300); // Steady rhythm loop speed
         }
 
         function start() { 
@@ -266,8 +296,13 @@
         }
         
         function lockFate() { 
+            // Halt target shuffle routine
             clearInterval(interval); 
+            
+            // Instantly trigger vintage backdrop track alongside the heavy impact chime
+            startVintageMusicLoop();
             playSound('lock');
+            
             final = outcomes[Math.floor(Math.random() * outcomes.length)]; 
             document.getElementById('roulette').innerHTML = final.text; 
             document.getElementById('roulette').classList.remove('flash'); 
@@ -291,6 +326,7 @@
         
         function resetEngine() { 
             playSound('click');
+            if(musicInterval) clearInterval(musicInterval);
             setTimeout(() => { location.reload(); }, 100);
         }
         
