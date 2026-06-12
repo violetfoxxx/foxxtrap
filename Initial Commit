@@ -10,8 +10,7 @@
         .container { width: 320px; border: 2px solid #bc13fe; padding: 20px; text-align: center; box-shadow: 0 0 20px #bc13fe; }
         .header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 20px; border-bottom: 1px solid #bc13fe; padding-bottom: 10px; }
         .frame { height: 160px; border: 2px solid #ff007f; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 20px; }
-        .btn { width: 100%; padding: 12px; margin: 5px 0; background: transparent; border: 1px solid #ff007f; color: #ff007f; cursor: pointer; text-transform: uppercase; font-family: inherit; }
-        .btn:disabled { border-color: #555; color: #555; cursor: not-allowed; }
+        .btn { width: 100%; padding: 12px; margin: 5px 0; background: transparent; border: 1px solid #ff007f; color: #ff007f; cursor: pointer; text-transform: uppercase; font-family: inherit; font-size: 13px; }
         .highlight { color: #ff007f; font-size: 24px; }
     </style>
 </head>
@@ -22,10 +21,12 @@
             <span>SYS_GATE V5</span>
         </div>
         <div id="roulette" class="frame">SYSTEM READY...</div>
+        
         <button id="triggerBtn" class="btn" onclick="lockFate()">TRAP MY WALLET</button>
+        
         <div id="actionContainer" style="display:none;">
-            <button class="btn" onclick="sharePunishment()">1. CONFESS RESULT ON X</button>
-            <button id="payBtn" class="btn" disabled onclick="executePayment()">🔒 TRIBUTE LOCKED</button>
+            <button class="btn" onclick="executePayment()">1. SUBMIT TRIBUTE</button>
+            <button class="btn" onclick="sharePunishment()">2. CONFESS RESULT ON X</button>
             <button class="btn" onclick="resetEngine()">🔄 RECALIBRATE / REPLAY</button>
         </div>
     </div>
@@ -44,10 +45,19 @@
         let final;
 
         function start() { interval = setInterval(() => { document.getElementById('roulette').innerHTML = outcomes[Math.floor(Math.random()*outcomes.length)].text; }, 50); }
-        function lockFate() { clearInterval(interval); final = outcomes[Math.floor(Math.random()*outcomes.length)]; document.getElementById('roulette').innerHTML = final.text; document.getElementById('triggerBtn').style.display='none'; document.getElementById('actionContainer').style.display='block'; }
-        function sharePunishment() { window.open(`https://twitter.com/intent/tweet?text=Caught in The Foxx Trap! Locked at ${final.amt}.`, '_blank'); document.getElementById('payBtn').disabled=false; document.getElementById('payBtn').innerText = "🔓 SUBMIT TRIBUTE"; }
+        
+        function lockFate() { 
+            clearInterval(interval); 
+            final = outcomes[Math.floor(Math.random()*outcomes.length)]; 
+            document.getElementById('roulette').innerHTML = final.text; 
+            document.getElementById('triggerBtn').style.display='none'; 
+            document.getElementById('actionContainer').style.display='block';
+        }
+        
         function executePayment() { window.open(final.link, '_blank'); }
+        function sharePunishment() { window.open(`https://twitter.com/intent/tweet?text=Caught in The Foxx Trap! Locked at ${final.amt}.`, '_blank'); }
         function resetEngine() { location.reload(); }
+        
         window.onload = start;
     </script>
 </body>
