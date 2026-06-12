@@ -195,29 +195,79 @@
     </div>
 
     <script>
+        // Verified database matching the layout within image.png exactly
         const outcomes = [
-            { text: "TRIBUTE ALLOCATED:<br><span class='highlight locked-glow'>$30</span>", amt: "$30", link: "https://throne.com/violetfoxxx888/item/1FC16DB3-6ECB-43BB-AF87-ABFBF641A6A9" },
-            { text: "TRIBUTE ALLOCATED:<br><span class='highlight locked-glow'>$45</span>", amt: "$45", link: "https://throne.com/violetfoxxx888/item/E9BA3E91-CE86-471B-853F-FF7F2F2888C7" },
-            { text: "TRIBUTE ALLOCATED:<br><span class='highlight locked-glow'>$50</span>", amt: "$50", link: "https://throne.com/violetfoxxx888/item/8E9809AC-DF45-4E1A-A3AF-E4C3F2E660CE" },
-            { text: "TRIBUTE ALLOCATED:<br><span class='highlight locked-glow'>$75</span>", amt: "$75", link: "https://throne.com/violetfoxxx888/item/11C05F35-8252-4756-969D-3E25951ED4D9" },
-            { text: "TRIBUTE ALLOCATED:<br><span class='highlight locked-glow'>$100</span>", amt: "$100", link: "https://throne.com/violetfoxxx888/item/EF6369CD-2652-419F-8879-1FC4DFA4AB2E" },
-            { text: "TRIBUTE ALLOCATED:<br><span class='highlight locked-glow'>$200</span>", amt: "$200", link: "https://throne.com/violetfoxxx888/item/5C68C4ED-19E5-40DD-8F57-B174D09042A9" }
+            { text: "WARNING: TRIBUTE LOCKED IN!<br><span class='highlight locked-glow'>$30</span>", amt: "$30", link: "https://throne.com/violetfoxxx888/item/1FC16DB3-6ECB-43BB-AF87-ABFBF641A6A9" },
+            { text: "WARNING: TRIBUTE LOCKED IN!<br><span class='highlight locked-glow'>$45</span>", amt: "$45", link: "https://throne.com/violetfoxxx888/item/E9BA3E91-CE86-471B-853F-FF7F2F2888C7" },
+            { text: "WARNING: TRIBUTE LOCKED IN!<br><span class='highlight locked-glow'>$50</span>", amt: "$50", link: "https://throne.com/violetfoxxx888/item/8E9809AC-DF45-4E1A-A3AF-E4C3F2E660CE" },
+            { text: "WARNING: TRIBUTE LOCKED IN!<br><span class='highlight locked-glow'>$75</span>", amt: "$75", link: "https://throne.com/violetfoxxx888/item/11C05F35-8252-4756-969D-3E25951ED4D9" },
+            { text: "WARNING: TRIBUTE LOCKED IN!<br><span class='highlight locked-glow'>$100</span>", amt: "$100", link: "https://throne.com/violetfoxxx888/item/EF6369CD-2652-419F-8879-1FC4DFA4AB2E" },
+            { text: "WARNING: TRIBUTE LOCKED IN!<br><span class='highlight locked-glow'>$200</span>", amt: "$200", link: "https://throne.com/violetfoxxx888/item/5C68C4ED-19E5-40DD-8F57-B174D09042A9" }
         ];
 
         let interval;
         let final;
+        let audioCtx = null;
+
+        // Core 8-bit Synth sound synthesizer
+        function playSound(type) {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                // Authentic retro triangle/square waveforms
+                osc.type = (type === 'spin' || type === 'click') ? 'square' : 'triangle';
+
+                if (type === 'spin') {
+                    // Quick low pitch chirps for running slots
+                    osc.frequency.setValueAtTime(120 + Math.random() * 60, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.04);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.04);
+                } 
+                else if (type === 'lock') {
+                    // Vintage rising multi-tone alert sound 
+                    osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(440, audioCtx.currentTime + 0.08);
+                    osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.25);
+                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } 
+                else if (type === 'click') {
+                    // Fast classic high coin ping sound
+                    osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+                    osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.05); // A5
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.15);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.15);
+                }
+            } catch (e) {
+                console.log("Audio contextual restriction handled safely.");
+            }
+        }
 
         function start() { 
             interval = setInterval(() => { 
                 const randomItem = outcomes[Math.floor(Math.random() * outcomes.length)];
-                // Keep performance clean while removing active target script glows inside rapid loop animation states
-                const safeLoopText = randomItem.text.replace(' locked-glow', '');
+                const safeLoopText = randomItem.text.replace(' locked-glow', '').replace('WARNING: TRIBUTE LOCKED IN!', 'ROULETTE ACTIVE...');
                 document.getElementById('roulette').innerHTML = safeLoopText; 
-            }, 50); 
+                playSound('spin');
+            }, 65); 
         }
         
         function lockFate() { 
             clearInterval(interval); 
+            playSound('lock');
             final = outcomes[Math.floor(Math.random() * outcomes.length)]; 
             document.getElementById('roulette').innerHTML = final.text; 
             document.getElementById('roulette').classList.remove('flash'); 
@@ -225,9 +275,24 @@
             document.getElementById('actionContainer').style.display = 'block';
         }
         
-        function executePayment() { window.open(final.link, '_blank'); }
-        function sharePunishment() { window.open(`https://twitter.com/intent/tweet?text=Caught in The Foxx Trap Game! Locked at ${final.amt}.`, '_blank'); }
-        function resetEngine() { location.reload(); }
+        function executePayment() { 
+            playSound('click');
+            if (final && final.link) {
+                const targetWindow = window.open();
+                targetWindow.opener = null;
+                targetWindow.location = final.link;
+            }
+        }
+        
+        function sharePunishment() { 
+            playSound('click');
+            window.open(`https://twitter.com/intent/tweet?text=Caught in The Foxx Trap Game! Locked at ${final.amt}.`, '_blank'); 
+        }
+        
+        function resetEngine() { 
+            playSound('click');
+            setTimeout(() => { location.reload(); }, 100);
+        }
         
         window.onload = start;
     </script>
