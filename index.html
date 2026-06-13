@@ -195,7 +195,7 @@
     </div>
 
     <script>
-        // Verified pure layout arrays 
+        // Cleaned public storefront URLs inserted seamlessly 
         const outcomes = [
             { amt: "$30", link: "https://throne.com/violetfoxxx888/item/1FC16DB3-6ECB-43BB-AF87-ABFBF641A6A9" },
             { amt: "$45", link: "https://throne.com/violetfoxxx888/item/E9BA3E91-CE86-471B-853F-FF7F2F2888C7" },
@@ -308,14 +308,13 @@
             document.getElementById('actionContainer').style.display = 'block';
         }
         
-        // Advanced fail-safe execution routing to guarantee zero login wall dead-ends
+        // Secure execution dispatch utilizing clean browser targets
         function executePayment() { 
             playSound('click');
             if (final && final.link) {
                 const primaryWindow = window.open(final.link, '_blank');
                 
-                // If a browser/platform environment triggers an immediate secure error block,
-                // this background focus fallback assigns the clean public marketplace route.
+                // Safety handler in case an embedded browser platform forces a hard container crash
                 if(!primaryWindow || primaryWindow.closed || typeof primaryWindow.closed == 'undefined') {
                     window.location.href = mainProfileFallback;
                 }
