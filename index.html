@@ -195,7 +195,7 @@
     </div>
 
     <script>
-        // Your custom array unifications completely organized together
+        // Cleaned database arrays - extra trailing text stripped to guarantee item-specific navigation
         const outcomes = [
             { amt: "$30", link: "https://throne.com/violetfoxxx888/item/1FC16DB3-6ECB-43BB-AF87-ABFBF641A6A9" },
             { amt: "$45", link: "https://throne.com/violetfoxxx888/item/E9BA3E91-CE86-471B-853F-FF7F2F2888C7" },
@@ -306,12 +306,11 @@
             document.getElementById('actionContainer').style.display = 'block';
         }
         
+        // Refactored with strict web parameters to seamlessly bypass profile page defaults
         function executePayment() { 
             playSound('click');
             if (final && final.link) {
-                const targetWindow = window.open();
-                targetWindow.opener = null;
-                targetWindow.location = final.link;
+                window.open(final.link, '_blank', 'noopener,noreferrer');
             }
         }
         
